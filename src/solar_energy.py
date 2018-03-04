@@ -4,9 +4,11 @@ https://www.kaggle.com/c/ams-2014-solar-energy-prediction-contest
 
 """
 
+import numpy as np
+
 def bilinear_interpolation(x, y, z):
     """
     """
-    pass
+    return np.ones(len(x))
 
 
