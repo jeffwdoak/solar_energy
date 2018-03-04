@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.ipynb_checkpoints
+
+# large data files
+*.nc
+*.csv
+*.tar
+*.gz
+*.zip
