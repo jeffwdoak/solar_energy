@@ -12,23 +12,28 @@ def test_bilinear_returns_nodes_at_nodes():
     x = np.arange(10.)
     y = np.arange(10.)
     z = np.ones((10, 10))
-    f_interpolated = solar_energy.bilinear_interpolation(x, y, z)
-    assert_allclose(f_interpolated, np.ones(len(x)))
+    z_interpolated = solar_energy.bilinear_interpolation(x, y, z)
+    assert_allclose(z_interpolated, np.ones(len(x)))
 
 def test_bilinear_returns_normal():
     x_grid = np.arange(3)
     y_grid = np.arange(3)
     z = np.ones((len(x_grid), len(y_grid)))
     z = (z*x_grid).T*y_grid
-    #x = np.arange(0.5, 2.5)
-    #y = np.arange(0.5, 2.5)
-    #x, y = np.meshgrid(np.arange(0.5, 2.5), np.arange(0.5, 2.5))
-    #f_expected = (x*y).ravel()
-    #x = x.ravel()
-    #y = y.ravel()
     x = np.array([0.5, 0.5, 1.5, 1.5])
     y = np.array([0.5, 1.5, 0.5, 1.5])
-    f_expected = np.array([0.25, 0.75, 0.75, 2.25])
-    #f_expected = np.outer(x, y).ravel()
-    f_interpolated = solar_energy.bilinear_interpolation(x, y, z)
-    assert_allclose(f_interpolated, f_expected)
+    z_expected = np.array([0.25, 0.75, 0.75, 2.25])
+    z_interpolated = solar_energy.bilinear_interpolation(x, y, z)
+    assert_allclose(z_interpolated, z_expected)
+
+def test_bilinear_x_at_nodes():
+    x_grid = np.arange(3)
+    y_grid = np.arange(3)
+    z = np.ones((len(x_grid), len(y_grid)))
+    z = (z*x_grid).T*y_grid
+    x = np.array([0., 1., 1., 2.])
+    y = np.array([0.5, 1.5, 0.5, 1.5])
+    z_expected = np.array([0., 1.5, 0.5, 3.])
+    z_interpolated = solar_energy.bilinear_interpolation(x, y, z)
+    assert_allclose(z_interpolated, z_expected)
+

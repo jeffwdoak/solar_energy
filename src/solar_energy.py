@@ -22,33 +22,39 @@ def bilinear_interpolation(x, y, z):
     
     Returns
     -------
-    f_interpolated : array-like
+    z_interpolated : array-like
         1-D array of interpolated z values at the points x, y. len(z) == len(x)
     """
-    print(x)
-    print(y)
     x_lower_indices = np.floor(x).astype(int)
     x_upper_indices = np.ceil(x).astype(int)
     y_lower_indices = np.floor(y).astype(int)
     y_upper_indices = np.ceil(y).astype(int)
-    print (x_lower_indices)
-    print (x_upper_indices)
-    print (y_lower_indices)
-    print (y_upper_indices)
 
     delta_x = x_upper_indices - x_lower_indices
     delta_y = y_upper_indices - y_lower_indices
-    print(delta_x, delta_y)
 
-    f_x_at_y_lower = (x_upper_indices - x)/delta_x*z[x_lower_indices, y_lower_indices]
-    f_x_at_y_lower += (x - x_lower_indices)/delta_x*z[x_upper_indices, y_lower_indices]
+    z_x_at_y_lower = (x_upper_indices - x)/delta_x*z[x_lower_indices, y_lower_indices]
+    z_x_at_y_lower += (x - x_lower_indices)/delta_x*z[x_upper_indices, y_lower_indices]
+    z_x_at_y_lower = np.where(np.isnan(z_x_at_y_lower),
+                              z[x_lower_indices, y_lower_indices],
+                              z_x_at_y_lower,
+                             )
     
-    f_x_at_y_upper = (x_upper_indices - x)/delta_x*z[x_lower_indices, y_upper_indices]
-    f_x_at_y_upper += (x - x_lower_indices)/delta_x*z[x_upper_indices, y_upper_indices]
+    z_x_at_y_upper = (x_upper_indices - x)/delta_x*z[x_lower_indices, y_upper_indices]
+    z_x_at_y_upper += (x - x_lower_indices)/delta_x*z[x_upper_indices, y_upper_indices]
+    z_x_at_y_upper = np.where(np.isnan(z_x_at_y_upper),
+                              z[x_upper_indices, y_upper_indices],
+                              z_x_at_y_upper,
+                             )
     
-    f_interpolated = (y_upper_indices - y)/delta_y*f_x_at_y_lower
-    f_interpolated += (y - y_lower_indices)/delta_y*f_x_at_y_upper
-    return f_interpolated
+    z_interpolated = (y_upper_indices - y)/delta_y*z_x_at_y_lower
+    z_interpolated += (y - y_lower_indices)/delta_y*z_x_at_y_upper
+    z_interpolated = np.where(np.isnan(z_interpolated),
+                              z_x_at_y_lower,
+                              z_interpolated,
+                             )
+
+    return z_interpolated
 
 
     
