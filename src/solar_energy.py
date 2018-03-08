@@ -5,6 +5,7 @@ https://www.kaggle.com/c/ams-2014-solar-energy-prediction-contest
 """
 
 import numpy as np
+from scipy.interpolate import SmoothBivariateSpline
 
 def bilinear_interpolation(x, y, z):
     """
@@ -56,7 +57,16 @@ def bilinear_interpolation(x, y, z):
 
     return z_interpolated
 
-
-    
-
+def spline_interpolation(x, y, z):
+    """
+    """
+    x_grid, y_grid = np.meshgrid(np.arange(np.shape(z)[0]),
+                                 np.arange(np.shape(z)[1])
+                                )
+    x_grid = x_grid.ravel()
+    y_grid = y_grid.ravel()
+    z = z.T.ravel()
+    z_spline = SmoothBivariateSpline(x_grid, y_grid, z)
+    z_interpolated = z_spline(x, y, grid=False)
+    return z_interpolated
 

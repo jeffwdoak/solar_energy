@@ -37,3 +37,10 @@ def test_bilinear_x_at_nodes():
     z_interpolated = solar_energy.bilinear_interpolation(x, y, z)
     assert_allclose(z_interpolated, z_expected)
 
+def test_spline_interpolation():
+    x = np.arange(10)
+    y = np.arange(10)
+    z = np.ones((10, 10))
+    z_expected = np.ones_like(x)
+    z_interpolated = solar_energy.spline_interpolation(x, y, z)
+    assert_allclose(z_interpolated, z_expected)
