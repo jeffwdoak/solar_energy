@@ -34,17 +34,17 @@ def bilinear_interpolation(x, y, z):
     delta_x = x_upper_indices - x_lower_indices
     delta_y = y_upper_indices - y_lower_indices
 
-    z_x_at_y_lower = (x_upper_indices - x)/delta_x*z[x_lower_indices, y_lower_indices]
-    z_x_at_y_lower += (x - x_lower_indices)/delta_x*z[x_upper_indices, y_lower_indices]
+    z_x_at_y_lower = (x_upper_indices - x)/delta_x*z[..., x_lower_indices, y_lower_indices]
+    z_x_at_y_lower += (x - x_lower_indices)/delta_x*z[..., x_upper_indices, y_lower_indices]
     z_x_at_y_lower = np.where(np.isnan(z_x_at_y_lower),
-                              z[x_lower_indices, y_lower_indices],
+                              z[..., x_lower_indices, y_lower_indices],
                               z_x_at_y_lower,
                              )
     
-    z_x_at_y_upper = (x_upper_indices - x)/delta_x*z[x_lower_indices, y_upper_indices]
-    z_x_at_y_upper += (x - x_lower_indices)/delta_x*z[x_upper_indices, y_upper_indices]
+    z_x_at_y_upper = (x_upper_indices - x)/delta_x*z[..., x_lower_indices, y_upper_indices]
+    z_x_at_y_upper += (x - x_lower_indices)/delta_x*z[..., x_upper_indices, y_upper_indices]
     z_x_at_y_upper = np.where(np.isnan(z_x_at_y_upper),
-                              z[x_upper_indices, y_upper_indices],
+                              z[..., x_upper_indices, y_upper_indices],
                               z_x_at_y_upper,
                              )
     
@@ -57,7 +57,7 @@ def bilinear_interpolation(x, y, z):
 
     return z_interpolated
 
-def spline_interpolation(x, y, z):
+def spline_interpolation(x, y, z, **kwargs):
     """
     """
     x_grid, y_grid = np.meshgrid(np.arange(np.shape(z)[0]),
@@ -67,7 +67,7 @@ def spline_interpolation(x, y, z):
     y_grid = y_grid.ravel()
     z = z.T.ravel()
 
-    z_spline = SmoothBivariateSpline(x_grid, y_grid, z)
+    z_spline = SmoothBivariateSpline(x_grid, y_grid, z, **kwargs)
     z_interpolated = z_spline(x, y, grid=False)
     return z_interpolated
 

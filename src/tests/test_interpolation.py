@@ -52,5 +52,7 @@ def test_spline_interpolation_flat_input():
     assert_allclose(z_interpolated, z_expected)
 
 def test_spline_interpolation_linear():
-    pass
+    x, y, z, z_expected = setup_linear()
+    z_interpolated = solar_energy.spline_interpolation(x, y, z, kx=1, ky=1)
+    assert_allclose(z_interpolated, z_expected)
     
