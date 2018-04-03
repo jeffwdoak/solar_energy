@@ -5,7 +5,79 @@ https://www.kaggle.com/c/ams-2014-solar-energy-prediction-contest
 """
 
 import numpy as np
+import pandas as pd
+import netCDF4
 from scipy.interpolate import SmoothBivariateSpline
+
+def todatetime(intdate):
+    """
+    Convert integer timestamp to datetime object.
+
+    """
+    strdate = str(intdate)
+    year = int(strdate[0:4])
+    month = int(strdate[4:6])
+    day = int(strdate[6:8])
+    return pd.datetime(year, month, day)
+
+def netcdf4_to_dataframe(netcdf):
+    """
+    Convert entire netcdf object to dataframe. 
+    
+    Only works well for small netcdf objects.
+    
+    """
+    data_as_array = np.array([np.array(i).flatten() 
+                             for i in netcdf.variables.values()]
+                            ).T
+    data_as_dataframe = pd.DataFrame(data_as_array, 
+                                     columns=netcdf.variables.keys()
+                                    )
+    return data_as_dataframe
+
+def interpolate_simulation_data(x,
+                                y,
+                                filename,
+                                location='../data/train/',
+                                ensemble_aggregator=np.mean,
+                                forecast_aggregator=np.mean,
+                               ):
+    """
+    Interpolate simulation data at all the mesonet x, y coordinates.
+    
+    Parameters
+    ----------
+    x, y : numpy arrays
+        1-D arrays of latitudes and longitudes respectively.
+    filename : str
+        Name of the file from which to load and interpolate data.
+    location : str, optional
+        Path to file. Defaults to '../data/train/'
+    
+    Returns
+    -------
+    averaged_data : numpy array
+        
+    
+    """
+    data_array = load_netcdf4_data(filename, location)
+    interpolated_data = bilinear_interpolation(x, y, data_array)
+    # Average over ensembles. This could be converted 
+    # to an elevation-weighted average.
+    averaged_data = ensemble_aggregator(interpolated_data, axis=1)
+    # Average over forecast hours.
+    # This could be converted to a sum, or integral.
+    averaged_data = forecast_aggregator(averaged_data, axis=1)
+    return averaged_data
+
+def load_netcdf4_data(filename, location='../data/train/'):
+    """
+    Load last entry in a netcdf4 file into a numpy array.
+
+    """
+    dataset = netCDF4.Dataset(location+filename, 'r')
+    data_array = np.array(list(dataset.variables.values())[-1])
+    return data_array
 
 def bilinear_interpolation(x, y, z):
     """
