@@ -99,14 +99,14 @@ model = GradientBoostingRegressor(loss='ls',
                                  )
 
 # Loop over each sensor, create a dataframe, and fit a GBRegressor to it.
-sensors = training_df.index.levels[0]
-simulations = list(set(training_df.columns) - {'mesonets'})
+sensors = cleaned_training_df.index.levels[0]
+simulations = list(set(cleaned_training_df.columns) - {'mesonets'})
 prediction_df = pd.DataFrame(index=sample_submission.index)
 for sensor in sensors:
     print('starting work on %s' % (sensor))
     # create dataframe for testing/training features and response
-    training_x = training_df.loc[sensor, simulations]
-    training_y = training_df.loc[sensor, 'mesonets']
+    training_x = cleaned_training_df.loc[sensor, simulations]
+    training_y = cleaned_training_df.loc[sensor, 'mesonets']
     testing_x = testing_df.loc[sensor]
     print('shape of testing_x', np.shape(testing_x))
     print('shape of sample index', np.shape(sample_submission.index))
@@ -118,7 +118,7 @@ for sensor in sensors:
     print('shape of sensor_predictions', sensor_predictions)
     prediction_df[sensor] = sensor_predictions
 # write predictions to file
-predictions_df.to_csv('../results/gradient_boosting_all_estimators-150_depth-3_rate-0-1_min-samples-20.csv')
+prediction_df.to_csv('../results/gradient_boosting_cleaned_all_estimators-150_depth-3_rate-0-1_min-samples-20.csv')
     
 
 
